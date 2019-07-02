@@ -8,7 +8,7 @@ RUN wget http://geolite.maxmind.com/download/geoip/database/GeoLite2-Country.tar
 
 WORKDIR /clash-src
 
-RUN git clone -b master https://github.com/Dreamacro/clash.git . && \
+RUN git clone -b v0.15.0 https://github.com/Dreamacro/clash.git . && \
     go mod download && \
     GOOS=linux GOARCH=amd64 CGO_ENABLED=0 go build -ldflags '-w -s' -o /clash
 
@@ -32,7 +32,7 @@ COPY --from=clash-builder /Country.mmdb /root/.config/clash/
 COPY --from=clash-builder /clash /
 COPY --from=dashboard-builder /dashboard-src/dist /dashboard
 
-EXPOSE 7890 7891 8080
+EXPOSE 7890 7891 7892 9090
 
 ENTRYPOINT ["/clash"]
 
