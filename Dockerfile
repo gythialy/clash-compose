@@ -1,6 +1,6 @@
 FROM golang:latest as clash-builder
 
-ENV GOPROXY=https://goproxy.io
+ENV GOPROXY=https://goproxy.cn
 
 RUN wget http://geolite.maxmind.com/download/geoip/database/GeoLite2-Country.tar.gz -O /tmp/GeoLite2-Country.tar.gz && \
     tar zxvf /tmp/GeoLite2-Country.tar.gz -C /tmp && \
@@ -8,7 +8,7 @@ RUN wget http://geolite.maxmind.com/download/geoip/database/GeoLite2-Country.tar
 
 WORKDIR /clash-src
 
-RUN git clone -b v0.15.0 https://github.com/Dreamacro/clash.git . && \
+RUN git clone -b dev https://github.com/Dreamacro/clash.git . && \
     go mod download && \
     GOOS=linux GOARCH=amd64 CGO_ENABLED=0 go build -ldflags '-w -s' -o /clash
 
