@@ -1,6 +1,6 @@
 FROM golang:latest as clash-builder
 
-ENV GOPROXY=https://goproxy.cn
+# ENV GOPROXY=https://goproxy.cn
 
 RUN wget http://geolite.maxmind.com/download/geoip/database/GeoLite2-Country.tar.gz -O /tmp/GeoLite2-Country.tar.gz && \
     tar zxvf /tmp/GeoLite2-Country.tar.gz -C /tmp && \
@@ -20,9 +20,12 @@ RUN git clone https://github.com/Dreamacro/clash-dashboard.git .
 
 ENV PATH /dashboard-src/node_modules/.bin:$PATH
 
+# RUN apt-get update && apt-get install -y webp && \
+#     npm i -g npm --registry=https://registry.npm.taobao.org && \
+#     npm ci --registry=https://registry.npm.taobao.org && npm run build
+
 RUN apt-get update && apt-get install -y webp && \
-    npm i -g npm --registry=https://registry.npm.taobao.org && \
-    npm ci --registry=https://registry.npm.taobao.org && npm run build
+    npm i -g npm  && npm ci  && npm run build
 
 FROM alpine:latest
 
