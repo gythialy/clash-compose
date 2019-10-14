@@ -1,6 +1,8 @@
-FROM golang:latest as clash-builder
+FROM golang:1.13.1 as clash-builder
 
 # ENV GOPROXY=https://goproxy.cn
+
+ENV CLASH_VERSION=v0.16.0
 
 RUN wget http://geolite.maxmind.com/download/geoip/database/GeoLite2-Country.tar.gz -O /tmp/GeoLite2-Country.tar.gz && \
     tar zxvf /tmp/GeoLite2-Country.tar.gz -C /tmp && \
@@ -8,7 +10,7 @@ RUN wget http://geolite.maxmind.com/download/geoip/database/GeoLite2-Country.tar
 
 WORKDIR /clash-src
 
-RUN git clone -b dev https://github.com/Dreamacro/clash.git . && \
+RUN git clone -b ${CLASH_VERSION} --depth 1 https://github.com/Dreamacro/clash.git /clash-src && \
     go mod download && \
     GOOS=linux GOARCH=amd64 CGO_ENABLED=0 go build -ldflags '-w -s' -o /clash
 
@@ -16,7 +18,7 @@ FROM node:lts-stretch as dashboard-builder
 
 WORKDIR /dashboard-src
 
-RUN git clone https://github.com/Dreamacro/clash-dashboard.git . 
+RUN git clone --depth 10 https://github.com/Dreamacro/clash-dashboard.git . 
 
 ENV PATH /dashboard-src/node_modules/.bin:$PATH
 
