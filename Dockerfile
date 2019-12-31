@@ -1,18 +1,17 @@
-FROM golang:1.13.1 as clash-builder
+FROM golang:1.13.5 as clash-builder
 
-# ENV GOPROXY=https://goproxy.cn
+# ENV GOPROXY=https://goproxy.cn,direct
 
-ENV CLASH_VERSION=v0.16.0
+ENV CLASH_VERSION=v0.17.0
 
-RUN wget http://geolite.maxmind.com/download/geoip/database/GeoLite2-Country.tar.gz -O /tmp/GeoLite2-Country.tar.gz && \
-    tar zxvf /tmp/GeoLite2-Country.tar.gz -C /tmp && \
-    mv /tmp/GeoLite2-Country_*/GeoLite2-Country.mmdb /Country.mmdb
+RUN wget -O /Country.mmdb https://github.com/Dreamacro/maxmind-geoip/releases/latest/download/Country.mmdb
 
 WORKDIR /clash-src
 
 RUN git clone -b ${CLASH_VERSION} --depth 1 https://github.com/Dreamacro/clash.git /clash-src && \
     go mod download && \
-    GOOS=linux GOARCH=amd64 CGO_ENABLED=0 go build -ldflags '-w -s' -o /clash
+    make linux-amd64 && \
+    mv ./bin/clash-linux-amd64 /clash
 
 FROM node:lts-stretch as dashboard-builder
 
@@ -27,7 +26,7 @@ ENV PATH /dashboard-src/node_modules/.bin:$PATH
 #     npm ci --registry=https://registry.npm.taobao.org && npm run build
 
 RUN apt-get update && apt-get install -y webp && \
-    npm i -g npm  && npm ci  && npm run build
+    npm i -g npm && npm ci && npm run build
 
 FROM alpine:latest
 
